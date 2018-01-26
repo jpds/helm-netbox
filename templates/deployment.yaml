@@ -1,0 +1,63 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: {{ template "fullname" . }}
+  labels:
+    app: {{ template "name" . }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "name" . }}
+        release: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.service.port }}
+          livenessProbe:
+            httpGet:
+              path: /
+              port: {{ .Values.service.port }}
+            initialDelaySeconds: 15 
+          readinessProbe:
+            httpGet:
+              path: /
+              port: {{ .Values.service.port }}
+            initialDelaySeconds: 15
+          env:
+          - name: DB_HOST
+            value: {{ .Values.netbox.dbhost }}
+          - name: DB_USER
+            value: {{ .Values.netbox.dbuser }}
+          - name: DB_PASS
+            value: {{ .Values.netbox.dbpass }}
+          - name: SECRET_KEY
+            value: {{ .Values.netbox.secretkey }}
+          - name: ALLOWED_HOSTS
+            value: {{ .Values.netbox.allowedhosts | quote }}
+          - name: LOGIN_REQUIRED
+            value: {{ .Values.netbox.loginrequired | quote }}
+          resources:
+{{ toYaml .Values.resources | indent 12 }}
+          volumeMounts:
+            - name: netbox-media
+              mountPath: /usr/src/netbox/netbox/media/
+    {{- if .Values.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.nodeSelector | indent 8 }}
+    {{- end }}
+      volumes:
+        - name: netbox-media
+      {{- if .Values.persistence.enabled }}
+          persistentVolumeClaim:
+            claimName: {{ template "fullname" . }}
+      {{- else }}
+          emptyDir: {}
+      {{- end -}}

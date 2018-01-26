@@ -1,0 +1,16 @@
+image:
+  name: lachlanevenson/k8s-helm
+  entrypoint:
+    - '/usr/bin/env'
+    - 'PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
+
+before_script:
+  - helm version --client
+
+stages:
+  - validate
+
+validate:
+  stage: validate
+  script:
+    - helm lint
