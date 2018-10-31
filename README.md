@@ -6,7 +6,7 @@ container.
 ## Prerequisites Details
 
 * Kubernetes 1.6+
-* A database service installed and configured (MySQL, PostgreSQL)
+* A database service installed (MySQL, PostgreSQL) and configured with a user with write/alter schema access to a `netbox` database
 
 ## Chart Details
 
@@ -41,4 +41,6 @@ The following tables lists the configurable parameters of the vault chart and th
 | `resources.limits.cpu`  | Container requested CPU             | `nil`                                               |
 | `resources.limits.memory` | Container requested memory        | `nil`                                               |
 
-Specify each parameter using the `--set key=value[,key=value]` argument to `helm install`.
+Specify each parameter using the `--set key=value[,key=value]` argument to `helm install` or by modifying `values.yaml` and replacing values as necessary.
+
+If you wish to use `kube-lego` to automatically request a TLS certificate from LetsEncrypt for your `Ingress` rule, uncomment the `kubernetes.io/tls-acme` annotation and `tls` section in `values.yaml`, and update the `tls.secretName` and `tls.hosts` to match your environment.
