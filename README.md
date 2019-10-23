@@ -6,7 +6,7 @@ container.
 ## Prerequisites Details
 
 * Kubernetes 1.6+
-* A database service installed and configured (MySQL, PostgreSQL)
+* A database service installed and configured (PostgreSQL)
 
 ## Chart Details
 
